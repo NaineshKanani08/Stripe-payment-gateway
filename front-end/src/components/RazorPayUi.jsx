@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 const RazorPayUi = () => {
     const [products, setProducts] = React.useState([])
-    const [responseData, setResponseData] = React.useState([])
     const Razorpay = useRazorpay()
     const navigate=useNavigate()
     React.useEffect(() => {
@@ -36,11 +35,10 @@ const RazorPayUi = () => {
             currency: data.currency,
             name: "Acme Corp",
             description: data.notes.desc,
-            image: "https://example.com/your_logo",
+            image: 'logo192.png',
             order_id: data.id,
             handler: (res) => {
                 navigate("/success",{state:res})
-                // setResponseData(res)
             },
             prefill: {
               name: "Piyush Garg",
