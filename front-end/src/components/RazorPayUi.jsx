@@ -3,11 +3,14 @@ import ProductsComp from './ProductsComp'
 import API from '../service/api'
 import useRazorpay from "react-razorpay";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthProvider';
 
 const RazorPayUi = () => {
     const [products, setProducts] = React.useState([])
+    const { isAuthenticated, isLoading } = useAuth()
+
     const Razorpay = useRazorpay()
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     React.useEffect(() => {
         getProducts()
     }, [])
@@ -21,14 +24,14 @@ const RazorPayUi = () => {
         }
 
     }
-    const createOrder =async(id)=>{
-        try{
-            const res=API.get(`/order/${id}`)
+    const createOrder = async (id) => {
+        try {
+            const res = API.get(`/order/${id}`)
             return res
-        }catch(err){console.log(err)}
+        } catch (err) { console.log(err) }
     }
-    const handleBuy = async(id) => {
-        const {data} = await createOrder(id);
+    const handleBuy = async (id) => {
+        const { data } = await createOrder(id);
         const options = {
             key: "rzp_test_QOgXbMITmaM4Bq",
             amount: data.amount,
@@ -38,27 +41,29 @@ const RazorPayUi = () => {
             image: 'logo192.png',
             order_id: data.id,
             handler: (res) => {
-                navigate("/success",{state:res})
+                navigate("/success", { state: res })
             },
             prefill: {
-              name: "Piyush Garg",
-              email: "youremail@example.com",
-              contact: "9999999999",
+                name: "Nainesh kanani",
+                email: "youremail@example.com",
+                contact: "9999999999",
             },
             notes: {
-              address: "Razorpay Corporate Office",
+                address: "Razorpay Corporate Office",
             },
             theme: {
-              color: "#3399cc",
+                color: "#3399cc",
             },
-          };
-          const rzpay = new Razorpay(options);
-          rzpay.open()
+        };
+        const rzpay = new Razorpay(options);
+        rzpay.open()
     }
     return (
         <div>
             <h2>RazorPayUi Example</h2>
-            <ProductsComp {...{ products, handleBuy }} />
+            {isLoading ? <p>Loading...</p> : isAuthenticated ?
+                <ProductsComp {...{ products, handleBuy }} /> : <p>Please Login to continue</p>
+            }
         </div>
     )
 }

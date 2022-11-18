@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-
 import "../styles.css";
+import { useAuth } from '../context/AuthProvider';
 
 let stripePromise;
 
@@ -15,7 +15,9 @@ const getStripe = () => {
 
 const Checkout = () => {
     const [stripeError, setStripeError] = useState(null);
-    const [isLoading, setLoading] = useState(false);
+    const [isLoadingFlag, setLoading] = useState(false);
+    const { isAuthenticated, isLoading } = useAuth()
+
     const item = {
         price: "price_1M40iSSI4eVtA6Th32Jn20tY",
         quantity: 1
@@ -47,31 +49,36 @@ const Checkout = () => {
 
     return (
         <div className="checkout">
-            <h1>Stripe Checkout</h1>
-            <p className="checkout-title">Sport Shoes</p>
-            <p className="checkout-description">
-                It is good quality of the product
-            </p>
-            <h1 className="checkout-price">₹ 3000</h1>
-            <img
-                className="checkout-product-image"
-                src="https://images.unsplash.com/photo-1562183241-b937e95585b6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cnVubmluZyUyMHNob2VzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
-                alt="Shoes"
-            />
-            <button
-                className="checkout-button"
-                onClick={redirectToCheckout}
-                disabled={isLoading}
-            >
-                <div className="grey-circle">
-                    <div className="purple-circle">
-                        {/* <img className="icon" src={CardIcon} alt="credit-card-icon" /> */}
-                    </div>
-                </div>
-                <div className="text-container">
-                    <p className="text">{isLoading ? "Loading..." : "Buy"}</p>
-                </div>
-            </button>
+            <h2>Stripe Example</h2>
+            {isLoading ? <p>Loading...</p> : isAuthenticated ?
+                <>
+                    <h1>Stripe Checkout</h1>
+                    <p className="checkout-title">Sport Shoes</p>
+                    <p className="checkout-description">
+                        It is good quality of the product
+                    </p>
+                    <h1 className="checkout-price">₹ 3000</h1>
+                    <img
+                        className="checkout-product-image"
+                        src="https://images.unsplash.com/photo-1562183241-b937e95585b6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cnVubmluZyUyMHNob2VzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60"
+                        alt="Shoes"
+                    />
+                    <button
+                        className="checkout-button"
+                        onClick={redirectToCheckout}
+                        disabled={isLoadingFlag}
+                    >
+                        <div className="grey-circle">
+                            <div className="purple-circle">
+                                {/* <img className="icon" src={CardIcon} alt="credit-card-icon" /> */}
+                            </div>
+                        </div>
+                        <div className="text-container">
+                            <p className="text">{isLoadingFlag ? "Loading..." : "Buy"}</p>
+                        </div>
+                    </button>
+                </> : <p>Please Login to continue</p>
+            }
         </div>
     );
 };
